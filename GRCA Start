@@ -1,1 +1,21 @@
 BBDUK
+
+#1 make R script 
+
+#2 upload r script to cristol 
+upload a file 
+scp "C:\Users\chris\Downloads\PIlot_Study\W&M Biology\GRCA\dada2_filter.R" patedrow@bora.sciclone.wm.edu:/sciclone/scr10/patedrow/cristol/
+
+#open slurm_scripts
+#add new slurm with nano "name"
+#add a header 
+
+#!/bin/bash
+#SBATCH --job-name=dada2_filter
+#SBATCH --output=dada2_%j.out
+#SBATCH --error=dada2_%j.err
+#SBATCH --time=48:00:00
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=8
+#SBATCH --mem=64G
