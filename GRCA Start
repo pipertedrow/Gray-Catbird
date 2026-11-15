@@ -30,7 +30,28 @@ seqtab <- readRDS("/sciclone/scr10/patedrow/cristol/trimmed_seq/filtered/seqtab.
 scp "C:\Users\chris\Downloads\PIlot_Study\W&M Biology\GRCA\dada2_postprocess2.R" patedrow@bora.sciclone.wm.edu:/sciclone/scr10/patedrow/cristol/trimmed_seq
 
 scp "C:\Users\chris\Downloads\PIlot_Study\W&M Biology\GRCA\metadata.csv" patedrow@bora.sciclone.wm.edu:/sciclone/scr10/patedrow/cristol/trimmed_seq
-scp "C:\Users\chris\Downloads\PIlot_Study\W&M Biology\GRCA\silva.gz" patedrow@bora.sciclone.wm.edu:/sciclone/scr10/patedrow/cristol/trimmed_seq
+scp "C:\Users\chris\Downloads\PIlot_Study\W&M Biology\GRCA\trimmed_seq\qualityplots.R" patedrow@bora.sciclone.wm.edu:/sciclone/scr10/patedrow/cristol/bbduk_filtered
+
+#### slurm script 
+#!/bin/bash
+#SBATCH --job-name=dada2
+#SBATCH --output=dada2_%j.out
+#SBATCH --error=dada2_%j.err
+#SBATCH --time=24:00:00
+#SBATCH --mem=32G
+#SBATCH --cpus-per-task=4
+
+# Initialize environment modules
+source /usr/share/Modules/init/bash
+
+# Load R
+module load r/gcc-11.4.1/4.4.0
+
+# Point to your existing R package library
+export R_LIBS_USER=~/R/x86_64-pc-linux-gnu-library/4.4
+
+# Run DADA2
+Rscript dada2_filter3.R
 
 
 
@@ -122,5 +143,10 @@ echo "BBDuk processing completed!"
 echo "Successfully processed: $PROCESSED sample pairs"
 echo "Output directory: $OUTPUT_DIR"
 echo "=================================="
+
+scp patedrow@bora.sciclone.wm.edu:/sciclone/scr10/patedrow/cristol/trimmed_seq/filtered/forward_quality.pdf "C:\Users\chris\Downloads\PIlot_Study\W&M Biology\GRCA\"
+
+
+
 
 
