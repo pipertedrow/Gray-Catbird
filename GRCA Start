@@ -32,3 +32,95 @@ scp "C:\Users\chris\Downloads\PIlot_Study\W&M Biology\GRCA\dada2_postprocess2.R"
 scp "C:\Users\chris\Downloads\PIlot_Study\W&M Biology\GRCA\metadata.csv" patedrow@bora.sciclone.wm.edu:/sciclone/scr10/patedrow/cristol/trimmed_seq
 scp "C:\Users\chris\Downloads\PIlot_Study\W&M Biology\GRCA\silva.gz" patedrow@bora.sciclone.wm.edu:/sciclone/scr10/patedrow/cristol/trimmed_seq
 
+
+
+
+###########activate conda 
+source ~/miniconda3/etc/profile.d/conda.csh
+conda activate read_prep
+
+
+
+#!/bin/bash
+
+#SBATCH --job-name=bbduk
+#SBATCH --cpus-per-task=8
+#SBATCH --mem=16G
+#SBATCH --time=04:00:00
+#SBATCH --output=bbduk_%j.out
+#SBATCH --error=bbduk_%j.err
+
+set -euo pipefail
+
+# Activate Conda environment
+source ~/miniconda3/etc/profile.d/conda.sh
+conda activate read_prep
+
+# Verify BBDuk
+which bbduk.sh
+
+# Move to raw FASTQ directory
+cd /sciclone/data10/patedrow/Cristol_Project_002
+
+# Create output directory
+OUTPUT_DIR="/sciclone/scr10/patedrow/cristol/bbduk_filtered"
+mkdir -p "$OUTPUT_DIR"
+
+# Number of threads
+THREADS=${SLURM_CPUS_PER_TASK:-8}
+
+# Find all forward reads
+shopt -s nullglob
+R1_FILES=(*_R1_001.fastq.gz)
+
+if [ ${#R1_FILES[@]} -eq 0 ]; then
+    echo "ERROR: No R1 FASTQ files found."
+    exit 1
+fi
+
+echo "Found ${#R1_FILES[@]} sample pairs to check."
+
+PROCESSED=0
+
+# Process each paired sample
+for R1 in "${R1_FILES[@]}"; do
+
+    R2="${R1/_R1_001.fastq.gz/_R2_001.fastq.gz}"
+
+    if [[ ! -f "$R2" ]]; then
+        echo "WARNING: Missing R2 for $R1. Skipping."
+        continue
+    fi
+
+    SAMPLE="${R1%_R1_001.fastq.gz}"
+
+    OUT1="$OUTPUT_DIR/${SAMPLE}_R1_001.clean.fastq.gz"
+    OUT2="$OUTPUT_DIR/${SAMPLE}_R2_001.clean.fastq.gz"
+
+    echo "=================================="
+    echo "Processing: $SAMPLE"
+    echo "=================================="
+
+    bbduk.sh \
+    in1="$R1" \
+    in2="$R2" \
+    out1="$OUT1" \
+    out2="$OUT2" \
+    ref=/sciclone/scr10/patedrow/cristol/adapters.fasta \
+    ktrim=r \
+    k=27 \
+    mink=11 \
+    hdist=1 \
+    threads="$THREADS"
+
+    PROCESSED=$((PROCESSED + 1))
+
+done
+
+echo "=================================="
+echo "BBDuk processing completed!"
+echo "Successfully processed: $PROCESSED sample pairs"
+echo "Output directory: $OUTPUT_DIR"
+echo "=================================="
+
+
