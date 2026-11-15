@@ -19,3 +19,16 @@ scp "C:\Users\chris\Downloads\PIlot_Study\W&M Biology\GRCA\dada2_filter.R" pated
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=64G
+
+#open R 
+
+module load r/gcc-11.4.1/4.4.0
+personal library (/sciclone/home/patedrow/R/x86_64-pc-linux-gnu-library/4.4)
+
+seqtab <- readRDS("/sciclone/scr10/patedrow/cristol/trimmed_seq/filtered/seqtab.rds")
+
+scp "C:\Users\chris\Downloads\PIlot_Study\W&M Biology\GRCA\dada2_postprocess2.R" patedrow@bora.sciclone.wm.edu:/sciclone/scr10/patedrow/cristol/trimmed_seq
+
+scp "C:\Users\chris\Downloads\PIlot_Study\W&M Biology\GRCA\metadata.csv" patedrow@bora.sciclone.wm.edu:/sciclone/scr10/patedrow/cristol/trimmed_seq
+scp "C:\Users\chris\Downloads\PIlot_Study\W&M Biology\GRCA\silva.gz" patedrow@bora.sciclone.wm.edu:/sciclone/scr10/patedrow/cristol/trimmed_seq
+
