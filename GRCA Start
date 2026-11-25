@@ -1,3 +1,10 @@
+sacct -j 704247 --format=JobID,JobName,State,Elapsed,Timelimit,MaxRSS,ExitCode
+
+
+
+
+
+
 BBDUK
 
 #1 make R script 
